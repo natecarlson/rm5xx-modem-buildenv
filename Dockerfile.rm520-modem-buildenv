@@ -6,7 +6,6 @@ LABEL maintainer="Nate Carlson <git@natecarlson.com>"
 LABEL org.label-schema.application="rm520-build-env"
 
 # Add apt config to only install direct requirements
-WORKDIR /
 COPY 99minimal-apt-installs /etc/apt/apt.conf.d/
 
 RUN apt update \
@@ -15,7 +14,5 @@ RUN apt update \
 	&& apt -y install python3
 
 ENV LC_ALL=en_US.UTF-8
-
-WORKDIR /root
 
 CMD ["bash"]
