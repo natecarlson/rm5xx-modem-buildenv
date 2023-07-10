@@ -19,15 +19,14 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push-image:
+  build-and-push-image-rm520:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
       - name: Checkout repository
@@ -52,5 +51,40 @@ jobs:
           context: .
           file: Dockerfile.rm520-modem-buildenv
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ghcr.io/natecarlson/rm5xx-modem-buildenv:rm520-main
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-and-push-image-rm50x:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4.4.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4.0.0
+        with:
+          context: .
+          file: Dockerfile.rm50x-modem-buildenv
+          push: true
+          tags: ghcr.io/natecarlson/rm5xx-modem-buildenv:rm50x-main
           labels: ${{ steps.meta.outputs.labels }}
